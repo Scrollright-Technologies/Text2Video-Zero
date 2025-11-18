@@ -9,15 +9,31 @@ import imageio
 from einops import rearrange
 import cv2
 from PIL import Image
-from annotator.util import resize_image, HWC3
-from annotator.canny import CannyDetector
-from annotator.openpose import OpenposeDetector
-from annotator.midas import MidasDetector
 import decord
 
-apply_canny = CannyDetector()
-apply_openpose = OpenposeDetector()
-apply_midas = MidasDetector()
+# Try to import annotators (require basicsr which may not be available on Python 3.11)
+try:
+    from annotator.util import resize_image, HWC3
+    from annotator.canny import CannyDetector
+    from annotator.openpose import OpenposeDetector
+    from annotator.midas import MidasDetector
+
+    apply_canny = CannyDetector()
+    apply_openpose = OpenposeDetector()
+    apply_midas = MidasDetector()
+    ANNOTATORS_AVAILABLE = True
+except ImportError as e:
+    print(f"Warning: Annotators (pose/edge/depth control) not available: {e}")
+    print("This is expected on Python 3.11. Text-to-video functionality will still work.")
+    apply_canny = None
+    apply_openpose = None
+    apply_midas = None
+    ANNOTATORS_AVAILABLE = False
+    # Define dummy functions for resize_image and HWC3
+    def resize_image(img, resolution):
+        return img
+    def HWC3(img):
+        return img
 
 
 def add_watermark(image, watermark_path, wm_rel_size=1/16, boundary=5):

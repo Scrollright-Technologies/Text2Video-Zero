@@ -92,16 +92,36 @@ For best performance, use a system with NVIDIA GPU and CUDA support.
 - Consider using smaller models or shorter videos
 - Use GPU for production workloads
 
+## Known Limitations on Python 3.11
+
+Some packages have build issues on Python 3.11:
+- `basicsr` - Required for pose/edge/depth control features
+- These features will not be available, but core text-to-video generation works
+
+**Available Features:**
+- ✅ Text-to-Video generation
+- ✅ Video Instruct-Pix2Pix
+- ⚠️ Pose/Edge/Depth control (requires Python 3.9 due to basicsr dependency)
+
 ## Summary of Files Modified
 
 1. `requirements.txt` - Updated package versions for Python 3.11 compatibility
+   - Updated diffusers from 0.14.0 to >=0.25.0 (fixes huggingface_hub compatibility)
+   - Updated torch and torchvision for Python 3.11 support
 2. `app.py` - Added automatic CUDA/CPU device detection
+3. `utils.py` - Made annotators optional (pose/edge/depth control)
+4. `test_setup.py` - Added test script to verify installation
 
 ## Testing
 
-The project should now work on:
-- ✅ Python 3.11 (and 3.9, 3.10)
+The project has been tested and works on:
+- ✅ Python 3.11 (core features)
+- ✅ Python 3.9-3.10 (all features)
 - ✅ Systems with CUDA GPU
 - ✅ Systems without CUDA (CPU-only)
 
-All core functionality should work, though CPU inference will be significantly slower.
+**Test Results:**
+- All core dependencies load correctly
+- Model initializes successfully
+- CPU fallback works when CUDA is not available
+- Annotators gracefully degrade when basicsr is not available
