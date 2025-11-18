@@ -12,7 +12,10 @@ import argparse
 import os
 
 on_huggingspace = os.environ.get("SPACE_AUTHOR_NAME") == "PAIR"
-model = Model(device='cuda', dtype=torch.float16)
+# Auto-detect device: use CUDA if available, otherwise use CPU
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+dtype = torch.float16 if torch.cuda.is_available() else torch.float32
+model = Model(device=device, dtype=dtype)
 parser = argparse.ArgumentParser()
 parser.add_argument('--public_access', action='store_true',
                     help="if enabled, the app can be access from a public url", default=False)
